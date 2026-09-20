@@ -5,7 +5,7 @@ Claude Code agents for an end-to-end workflow in the VS Code terminal. One Markd
 | Agent | Status | What it does |
 | --- | --- | --- |
 | [`ticket-maker`](agents/ticket_maker.md) | Ready | Turns any input (screenshots, links, files, dictation) into one ticket: a Title box and a Description box made of Context, Problem and Acceptance Criteria. |
-| Iterative Deep Technical Planner | Planned | — |
+| [`deep-technical-planner`](agents/deep_technical_planner.md) | Ready | Plans in plan mode, then improves the plan over N rounds (default 2): score it out of 100, list what 100/100 needs, enhance it. Read-only. |
 | Cypress | Planned | — |
 | Unit | Planned | — |
 | Sonar | Planned | — |
@@ -28,9 +28,15 @@ Run the whole session as the agent, so screenshots, links, file paths and dictat
 
 ```bash
 claude --agent ticket-maker
+claude --agent deep-technical-planner --permission-mode plan
 ```
 
-To make it a one-word command, add `alias ticket='claude --agent ticket-maker'` to `~/.zshrc`.
+To make them one-word commands, add these to `~/.zshrc`:
+
+```bash
+alias ticket='claude --agent ticket-maker'
+alias plan='claude --agent deep-technical-planner --permission-mode plan'
+```
 
 Why not simply ask Claude to "use the ticket-maker agent"? A delegated subagent starts with a fresh context and only sees the summary the main session writes for it, so pasted screenshots and exact wording can be lost. Running the session as the agent avoids that.
 
@@ -41,6 +47,14 @@ Why not simply ask Claude to "use the ticket-maker agent"? A delegated subagent 
 - It is read-only (`tools: Read, Glob, Grep, WebFetch`), so it cannot edit files or run commands. To let it read from a connector such as Slack or Notion, add that connector's read-only tool names to the `tools` line.
 - Labels, priority and assignee are set in your tracker after pasting.
 - A follow-up such as "make it a bug" or "shorter" returns the complete revised ticket.
+
+## Deep Technical Planner
+
+- Give it a ticket (a Ticket Maker ticket works as it is) and, optionally, a whole number in digits on its own line, such as `3`, or written as `3 iterations`. No number means 2 rounds. A value that is not a positive whole number falls back to 2 and the reply says so.
+- It grounds a first plan in your codebase, then repeats three questions in order: score the plan out of 100 against 2026 software-engineering practice, what is required to score 100/100, and enhance the plan on that feedback. It stops early at 100/100 and ends with a final score.
+- Scoring uses a fixed 100-point rubric: requirements traceability, design, testing, edge cases, security and privacy, rollout and rollback, configuration, observability, documentation, and sequencing.
+- It is read-only (`tools: Read, Glob, Grep, WebSearch, WebFetch`) and only plans. To implement, start a normal session and point it at the plan.
+- The agent file sets `permissionMode: plan`. Keep `--permission-mode plan` on the command line as well, so plan mode is guaranteed for the main session.
 
 ## Adding an agent
 
