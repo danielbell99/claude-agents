@@ -54,6 +54,7 @@ Why not simply ask Claude to "use the ticket-maker agent"? A delegated subagent 
 - It grounds a first plan in your codebase, then repeats three questions in order: score the plan out of 100 against 2026 software-engineering practice, what is required to score 100/100, and enhance the plan on that feedback. It stops early at 100/100 and ends with a final score.
 - Scoring uses a fixed 100-point rubric: requirements traceability, design, testing, edge cases, security and privacy, rollout and rollback, configuration, observability, documentation, and sequencing.
 - It is read-only (`tools: Read, Glob, Grep, WebSearch, WebFetch`) and only plans. To implement, start a normal session and point it at the plan.
+- Cancelling mid-run is safe: the last plan that ends with its `End of Plan vK.` line is the kept plan and anything after it is discarded. Say `continue` to resume from it, or ask for the plan to get it as it stands. After quitting, `claude --continue` restores the session.
 - The agent file sets `permissionMode: plan`. Keep `--permission-mode plan` on the command line as well, so plan mode is guaranteed for the main session.
 
 ## Adding an agent

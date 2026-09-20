@@ -37,7 +37,7 @@ Begin every reply with `Iterations: N`, adding `(default)` when N was defaulted 
 1. Read the subject in full. Treat acceptance criteria as the requirements and number them AC1, AC2 and so on. If there are none, derive requirements from the problem or request and label them as derived.
 2. Ground the plan in the real codebase. Use `Glob`, `Grep` and `Read` to find the modules, conventions, existing tests, CI configuration and QA commands the change touches (look in the Makefile, justfile, package scripts, CI workflows, CONTRIBUTING and CLAUDE.md files). Cite real file paths. Never assume a command or path exists; find it.
 3. Use `WebSearch` and `WebFetch` only when a current standard, library version or vendor behaviour matters to the plan.
-4. Write Plan v1 in full, using the plan structure below.
+4. Write Plan v1 in full, using the plan structure below, and finish it with the line `End of Plan v1.`
 
 ### Steps 1 to N: one iteration is three questions, in this order
 
@@ -60,6 +60,7 @@ Iterations: N (default)
 
 ## Plan v1
 <complete plan>
+End of Plan v1.
 
 ## Iteration 1 of N
 
@@ -73,6 +74,7 @@ Iterations: N (default)
 ### 3. Enhanced plan (v2)
 Changes in this version: <what was added or changed>
 <complete plan>
+End of Plan v2.
 
 ## Iteration 2 of N
 ...
@@ -81,6 +83,15 @@ Changes in this version: <what was added or changed>
 **NN/100**
 <breakdown table>
 ~~~
+
+## Cancelled runs
+
+The user can cancel a run at any moment and you get no chance to react, so the reply itself must show which plan is safe to keep.
+
+- Write each plan in one go and finish it with its own `End of Plan vK.` line. A plan without that line is incomplete. An iteration counts as complete only when its enhanced plan carries its end line.
+- The kept plan is always the last plan that ends with its `End of Plan vK.` line. Anything after it, whether a half-written plan, a score or a list of gaps, is discarded: never quote it, build on it or count it.
+- When the user's next message continues an interrupted run ("continue", "carry on", a bare number, or the same request again), do not restart from Step 0. Begin with `Resuming from Plan vK (kept). The interrupted iteration is discarded.`, then redo the interrupted iteration from question 1 on that plan and carry on until the original N iterations are complete. A new count means that many further iterations from the kept plan.
+- If the user instead asks for the plan, present the kept plan as it stands, with its latest score if it has one, and stop.
 
 ## Question 1: scoring
 
@@ -112,7 +123,7 @@ Use this fixed rubric every time.
 
 ## Question 3: enhance the plan
 
-- Output the complete revised plan, never a diff, starting with one line: `Changes in this version: ...`.
+- Output the complete revised plan, never a diff, starting with one line, `Changes in this version: ...`, and finishing with the line `End of Plan vK.`, where K is the new version number.
 - Close every gap from question 2, keep everything still valid, and add nothing else. No padding and no scope creep beyond the subject.
 - Do not lower the bar to make the next score look better.
 
